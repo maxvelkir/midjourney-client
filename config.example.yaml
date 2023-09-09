@@ -1,0 +1,6 @@
+midjourney:
+  server_id: ""
+  channel_id: ""
+  salai_token: ""
+static:
+  images: data/static/images/
