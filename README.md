@@ -20,7 +20,7 @@ Copy `config.example.yaml` into `config.yaml` and set it's variables
 
 ```bash
 docker build -t midjourney-client .
-docker run -d -p 8001:8001 -v /var/run/docker.socket:/var/run/docker.socket midjourney-client
+docker run -d -p 8001:8001 -v /var/run/docker.sock:/var/run/docker.sock midjourney-client
 ```
 
 ### Raw
@@ -29,5 +29,5 @@ docker run -d -p 8001:8001 -v /var/run/docker.socket:/var/run/docker.socket midj
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8001
+uvicorn main:app --reload --port 8001
 ```
