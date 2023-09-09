@@ -24,52 +24,41 @@ async def periodic_task():
         await asyncio.sleep(10)
         logger.info(f"heartbeat")
 
-        for priority_gen_image in QUEUES["PRIORITY_IMAGE_QUEUE"]:
-            if priority_gen_image["fail_count"] > 5:
-                logger.info(
-                    f"Failed to generate image for idea_id: {priority_gen_image['image'].idea_id}"
-                )
-                if priority_gen_image["container"].status == "running":
-                    priority_gen_image["container"].remove(force=True)
-                QUEUES["PRIORITY_IMAGE_QUEUE"].remove(priority_gen_image)
-                continue
-
-            is_generated = images.get_split_save_image(
-                priority_gen_image["image"], priority_gen_image["container"]
-            )
-
-            if is_generated:
-                priority_gen_image["container"].remove(force=True)
-                QUEUES["PRIORITY_IMAGE_QUEUE"].remove(priority_gen_image)
-            else:
-                priority_gen_image["fail_count"] += 1
-
-        for gen_image in QUEUES["IMAGE_QUEUE"]:
-            if QUEUES["PRIORITY_IMAGE_QUEUE"]:
-                break
-
-            if gen_image["fail_count"] > 5:
-                logger.info(
-                    f"Failed to generate image for idea_id: {gen_image['image'].idea_id}"
-                )
-                if gen_image["container"].status == "running":
-                    gen_image["container"].remove(force=True)
-                QUEUES["IMAGE_QUEUE"].remove(gen_image)
-                continue
-
-            is_generated = images.split_and_save_image(
-                gen_image["image"], gen_image["container"]
-            )
-
-            if is_generated:
-                gen_image["container"].remove(force=True)
-                QUEUES["IMAGE_QUEUE"].remove(gen_image)
-            else:
-                gen_image["fail_count"] += 1
-
+        # cleanup leftover containers
         if not QUEUES["PRIORITY_IMAGE_QUEUE"] and not QUEUES["IMAGE_QUEUE"]:
             client = docker.DockerClient(base_url="unix://var/run/docker.sock")
-            client.containers.prune()
+            containers = client.containers.list(
+                filters={"ancestor": "omegasz/midjourney-api"}
+            )
+            for container in containers:
+                container.remove(force=True)
+
+        for queue in QUEUES.keys():
+            if QUEUES["PRIORITY_IMAGE_QUEUE"] and queue == "IMAGE_QUEUE":
+                break
+
+            for gen_image in QUEUES[queue]:
+                image = gen_image["image"]
+                container = gen_image["container"]
+                fail_count = gen_image["fail_count"]
+
+                if fail_count > 5:
+                    logger.info(
+                        f"Failed to generate image from {queue} for idea_id: {image.idea_id}"
+                    )
+
+                    container.remove(force=True)
+                    QUEUES[queue].remove(gen_image)
+
+                    continue
+
+                is_generated = images.get_split_save_image(image, container)
+
+                if is_generated:
+                    container.remove(force=True)
+                    QUEUES[queue].remove(gen_image)
+                else:
+                    gen_image["fail_count"] = fail_count + 1
 
 
 async def generate_images(images: [schemas.Image]):
@@ -91,9 +80,9 @@ async def generate_images(images: [schemas.Image]):
             logger.info(f"Queued image for idea_id: {ungenerated_image.idea_id}")
 
         # sending requests too fast will cause MidJourney to miss some generations
-        await asyncio.sleep(3.5)
+        await asyncio.sleep(5)
         if i % 3 == 1:
-            await asyncio.sleep(3.5)
+            await asyncio.sleep(5)
 
 
 @asynccontextmanager
