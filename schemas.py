@@ -7,9 +7,9 @@ class URL(BaseModel):
     url: str
 
 
-class Image(BaseModel):
-    hash: str
+class GenImage(BaseModel):
     idea_id: int
+    hash: str
     image_prompt: str
     midjourney_image_url: Optional[str] = None
     is_generated: Optional[bool] = False

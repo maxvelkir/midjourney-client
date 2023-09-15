@@ -18,6 +18,13 @@ router = APIRouter()
 QUEUES = {}
 
 
+def clear_docker_continers():
+    client = docker.DockerClient(base_url="unix://var/run/docker.sock")
+    containers = client.containers.list(filters={"ancestor": "omegasz/midjourney-api"})
+    for container in containers:
+        container.remove(force=True)
+
+
 # split and save images in the background for concurrency
 async def periodic_task():
     while True:
@@ -26,12 +33,7 @@ async def periodic_task():
 
         # cleanup leftover containers
         if not QUEUES["PRIORITY_IMAGE_QUEUE"] and not QUEUES["IMAGE_QUEUE"]:
-            client = docker.DockerClient(base_url="unix://var/run/docker.sock")
-            containers = client.containers.list(
-                filters={"ancestor": "omegasz/midjourney-api"}
-            )
-            for container in containers:
-                container.remove(force=True)
+            clear_docker_continers()
 
         for queue in QUEUES.keys():
             if QUEUES["PRIORITY_IMAGE_QUEUE"] and queue == "IMAGE_QUEUE":
@@ -61,7 +63,7 @@ async def periodic_task():
                     gen_image["fail_count"] = fail_count + 1
 
 
-async def generate_images(images: [schemas.Image]):
+async def generate_images(images: [schemas.GenImage]):
     i = 0
     for ungenerated_image in images:
         # start containers to generate images without waiting for them to finish (keep it async)
@@ -122,10 +124,21 @@ app.mount(
     status_code=status.HTTP_201_CREATED,
 )
 async def queue_midjourney_image_generation(
-    gen_images: List[schemas.Image],
+    gen_images: List[schemas.GenImage],
     background_tasks: BackgroundTasks,
 ):
     background_tasks.add_task(generate_images, gen_images)
+
+
+@router.get(
+    "/flush_queue",
+    status_code=status.HTTP_201_CREATED,
+)
+async def flush_queue():
+    QUEUES["PRIORITY_IMAGE_QUEUE"] = []
+    QUEUES["IMAGE_QUEUE"] = []
+
+    clear_docker_continers()
 
 
 app.include_router(router)

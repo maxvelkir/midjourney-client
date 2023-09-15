@@ -12,7 +12,7 @@ from logger import logger
 
 
 def image_crop(
-    image: schemas.Image, byte_code: bytes, xPieces: int, yPieces: int
+    image: schemas.GenImage, byte_code: bytes, xPieces: int, yPieces: int
 ) -> bool:
     pil_image = Image.open(io.BytesIO(byte_code))
 
@@ -45,7 +45,7 @@ def image_crop(
     return True
 
 
-def get_split_save_image(image: schemas.Image, container) -> bool:
+def get_split_save_image(image: schemas.GenImage, container) -> bool:
     midjourney_image_url = midjourney.get_midjourney_image_url(container)
 
     if not midjourney_image_url:
