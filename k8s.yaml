@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: midjourney-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: midjourney-api
+  template:
+    metadata:
+      labels:
+        app: midjourney-api
+    spec:
+      containers:
+        - name: midjourney-api
+          image: us-central1-docker.pkg.dev/omnithink/omniweb/midjourney-api
+          ports:
+            - containerPort: 8001
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: midjourney-service
+  namespace: default
+spec:
+  selector:
+    app: midjourney-api
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
