@@ -38,7 +38,7 @@ async def prompt(prompt: str):
             f"SERVER_ID={server_id}",
             f"CHANNEL_ID={channel_id}",
             f"SALAI_TOKEN={salai_token}",
-            f"PROMPT={prompt}",
+            f"PROMPT={prompt}. Add small random feature --turbo",
         ],
         command="tsx example/imagine-ws.ts",
         detach=True,
