@@ -10,7 +10,7 @@ client = docker.DockerClient(base_url="unix://var/run/docker.sock")
 
 
 def get_midjourney_image_url(container) -> Optional[str]:
-    regex = r"https:\/\/cdn\.discordapp\.com\/attachments\/\w+\/\w+\/\w+-\w+-\w+-\w+-\w+\.png"
+    regex = r"https:\/\/cdn\.discordapp\.com\/attachments\/.+?png"
 
     try:
         logs = container.logs().decode("utf-8")
