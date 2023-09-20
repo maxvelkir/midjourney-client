@@ -1,0 +1,18 @@
+version: '3'
+services:
+  midjourney-generator:
+    image: omegasz/midjourney-generator
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./images:/code/images
+      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: midjourney-generator
+
+  midjourney-server:
+    image: omegasz/midjourney-server
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./images:/code/images
+    container_name: midjourney-server

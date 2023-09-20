@@ -1,14 +1,11 @@
 import io
-from typing import List, Optional
-
-import requests
-from PIL import Image
-from sqlalchemy.orm import Session
 
 import midjourney
+import requests
 import schemas
 from config import IMAGE_PATH
 from logger import logger
+from PIL import Image
 
 
 def image_crop(

@@ -3,15 +3,13 @@ from contextlib import asynccontextmanager
 from typing import List
 
 import docker
-from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-
-import images
 import midjourney
 import schemas
-from config import IMAGE_PATH
+from fastapi import APIRouter, BackgroundTasks, FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 from logger import logger
+
+import images
 
 router = APIRouter()
 
@@ -102,7 +100,11 @@ async def lifespan(app=FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-origins = ["http://localhost:8000"]
+origins = [
+    "http://localhost:8000",
+    "http://34.132.251.186",
+    "http://34.132.251.186:8000",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -110,12 +112,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
-
-app.mount(
-    "/" + IMAGE_PATH,
-    StaticFiles(directory=IMAGE_PATH),
-    name="images",
 )
 
 

@@ -1,6 +1,5 @@
 black
 fastapi
 uvicorn[standard]
-SQLAlchemy
 docker
 Pillow
