@@ -3,4 +3,4 @@ midjourney:
   channel_id: ""
   salai_token: ""
 static:
-  images: data/static/images/
+  images: images/
