@@ -102,8 +102,8 @@ app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:8000",
-    "http://34.132.251.186",
-    "http://34.132.251.186:8000",
+    "http://portal.omnithink.ai",
+    "https://portal.omnithink.ai",
 ]
 
 app.add_middleware(
