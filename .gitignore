@@ -16,3 +16,5 @@ __pypackages__/
 
 # Cache
 __pycache__
+
+.vscode/
