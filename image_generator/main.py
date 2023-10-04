@@ -3,13 +3,12 @@ from contextlib import asynccontextmanager
 from typing import List
 
 import docker
+import images
 import midjourney
 import schemas
 from fastapi import APIRouter, BackgroundTasks, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from logger import logger
-
-import images
 
 router = APIRouter()
 
@@ -101,6 +100,7 @@ async def lifespan(app=FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
+    "http://localhost",
     "http://localhost:8000",
     "http://portal.omnithink.ai",
     "https://portal.omnithink.ai",

@@ -12,6 +12,7 @@ app.mount(
 )
 
 origins = [
+    "http://localhost",
     "http://localhost:8000",
     "http://portal.omnithink.ai",
     "https://portal.omnithink.ai",
