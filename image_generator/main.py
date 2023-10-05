@@ -3,19 +3,20 @@ from contextlib import asynccontextmanager
 from typing import List
 
 import docker
-import images
 import midjourney
 import schemas
 from fastapi import APIRouter, BackgroundTasks, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from logger import logger
 
+import images
+
 router = APIRouter()
 
 QUEUES = {}
 
 
-def clear_docker_continers():
+def clear_docker_containers():
     client = docker.DockerClient(base_url="unix://var/run/docker.sock")
     containers = client.containers.list(filters={"ancestor": "omegasz/midjourney-api"})
     for container in containers:
@@ -30,7 +31,7 @@ async def periodic_task():
 
         # cleanup leftover containers
         if not QUEUES["PRIORITY_IMAGE_QUEUE"] and not QUEUES["IMAGE_QUEUE"]:
-            clear_docker_continers()
+            clear_docker_containers()
 
         for queue in QUEUES.keys():
             if QUEUES["PRIORITY_IMAGE_QUEUE"] and queue == "IMAGE_QUEUE":

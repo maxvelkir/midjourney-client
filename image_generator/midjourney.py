@@ -2,7 +2,6 @@ import re
 from typing import Optional
 
 import docker
-
 from config import config
 from logger import logger
 
@@ -38,7 +37,7 @@ async def prompt(prompt: str):
             f"SERVER_ID={server_id}",
             f"CHANNEL_ID={channel_id}",
             f"SALAI_TOKEN={salai_token}",
-            f"PROMPT={prompt}. Add small random feature --turbo",
+            f"PROMPT={prompt}. Add small random feature --turbo --chaos 75",
         ],
         command="tsx example/imagine-ws.ts",
         detach=True,
