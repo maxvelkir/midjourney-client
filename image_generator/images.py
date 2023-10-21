@@ -50,7 +50,7 @@ def get_split_save_image(image: schemas.GenImage, container) -> bool:
     image.midjourney_image_url = midjourney_image_url
 
     logger.info(f"Image url is: {image.midjourney_image_url}")
-    logger.info(f"Creating image for idea_id: {image.idea_id}")
+    logger.info(f"Creating image for design_id: {image.design_id}")
 
     try:
         image_byte_code = requests.get(image.midjourney_image_url).content
@@ -60,7 +60,7 @@ def get_split_save_image(image: schemas.GenImage, container) -> bool:
 
     if not image_crop(image, image_byte_code, 2, 2):
         logger.error(
-            f"Failed to create images for idea: {image.idea_id}. Crop/Save failed."
+            f"Failed to create images for design: {image.design_id}. Crop/Save failed."
         )
         return False
 

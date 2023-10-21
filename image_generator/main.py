@@ -44,7 +44,7 @@ async def periodic_task():
 
                 if fail_count > 5:
                     logger.info(
-                        f"Failed to generate image from {queue} for idea_id: {image.idea_id}"
+                        f"Failed to generate image from {queue} for design_id: {image.design_id}"
                     )
 
                     container.remove(force=True)
@@ -71,13 +71,13 @@ async def generate_images(images: [schemas.GenImage]):
                 {"image": ungenerated_image, "container": container, "fail_count": 0}
             )
             logger.info(
-                f"Queued priority image for idea_id: {ungenerated_image.idea_id}"
+                f"Queued priority image for design_id: {ungenerated_image.design_id}"
             )
         else:
             QUEUES["IMAGE_QUEUE"].append(
                 {"image": ungenerated_image, "container": container, "fail_count": 0}
             )
-            logger.info(f"Queued image for idea_id: {ungenerated_image.idea_id}")
+            logger.info(f"Queued image for design_id: {ungenerated_image.design_id}")
 
         # sending requests too fast will cause MidJourney to miss some generations
         await asyncio.sleep(5)
@@ -135,7 +135,7 @@ async def flush_queue():
     QUEUES["PRIORITY_IMAGE_QUEUE"] = []
     QUEUES["IMAGE_QUEUE"] = []
 
-    clear_docker_continers()
+    clear_docker_containers()
 
 
 app.include_router(router)
