@@ -44,7 +44,7 @@ async def periodic_task():
 
                 if fail_count > 5:
                     logger.info(
-                        f"Failed to generate image from {queue} for design_id: {image.design_id}"
+                        f"Failed to generate image from {queue} for product_id: {image.product_id}"
                     )
 
                     container.remove(force=True)
@@ -71,13 +71,13 @@ async def generate_images(images: [schemas.GenImage]):
                 {"image": ungenerated_image, "container": container, "fail_count": 0}
             )
             logger.info(
-                f"Queued priority image for design_id: {ungenerated_image.design_id}"
+                f"Queued priority image for product_id: {ungenerated_image.product_id}"
             )
         else:
             QUEUES["IMAGE_QUEUE"].append(
                 {"image": ungenerated_image, "container": container, "fail_count": 0}
             )
-            logger.info(f"Queued image for design_id: {ungenerated_image.design_id}")
+            logger.info(f"Queued image for product_id: {ungenerated_image.product_id}")
 
         # sending requests too fast will cause MidJourney to miss some generations
         await asyncio.sleep(5)
